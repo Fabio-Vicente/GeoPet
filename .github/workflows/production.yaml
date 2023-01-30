@@ -1,0 +1,32 @@
+name: Production
+
+on:
+  push:
+    branches: [ "staging" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v3.0.3
+
+      - name: Teste application
+        run: dotnet test tests
+  
+  merge:
+    needs: test
+      runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Merge main
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: main
+          github_token: ${{ github.token }}
